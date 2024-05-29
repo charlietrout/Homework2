@@ -65,7 +65,7 @@ for (i in 1:nrow(placebo_df)) {
 }
 ```
 
-# Function Writing
+# Task 5 Function Writing
 
 ```{r}
 calculate_summary <- function(df_list, stat = "mean") {
