@@ -1,0 +1,91 @@
+# Task 1: Basic Vector Practice
+
+```{r}
+pre_bp <- c(130, 128, 116, 124, 133, 134, 118, 126, 114, 127, 141, 138, 128, 140, 137, 131, 120, 128, 139, 135)
+post_bp <- c(114, 98, 113, 99, 107, 116, 113, 111, 119, 117, 101, 119, 130, 122, 106, 106, 124, 102, 117, 113)
+names(pre_bp) <- paste("Subject", 1:20, sep = "_")
+names(post_bp) <- paste("Subject", 1:20, sep = "_")
+diff_bp <- pre_bp - post_bp
+avg_decrease <- mean(diff_bp)
+decrease_indices <- which(diff_bp > 0)
+positive_changes <- diff_bp[decrease_indices]
+avg_positive_decrease <- mean(positive_changes)
+```
+
+# Task 2: Basic Data Frame Practice
+
+```{r}
+bp_df <- data.frame(patient = 1:20,
+                     pre_bp = pre_bp,
+                     post_bp = post_bp,
+                     diff_bp = diff_bp)
+negative_diff <- bp_df[bp_df$diff_bp < 0, ]
+bp_df$below_120 <- bp_df$post_bp < 120
+knitr::kable(bp_df)
+```
+
+# Task 3: List Practice
+
+```{r}
+placebo_df <- data.frame(patient = 1:10,
+                         pre_bp = c(138, 135, 147, 117, 152, 134, 114, 121, 131, 130),
+                         post_bp = c(105, 136, 123, 130, 134, 143, 135, 139, 120, 124),
+                         diff_bp = NA)
+placebo_df$diff_bp <- placebo_df$pre_bp - placebo_df$post_bp
+placebo_df$below_120 <- placebo_df$post_bp < 120
+bp_list <- list(treatment = bp_df, placebo = placebo_df)
+bp_list[[1]]
+bp_list$treatment
+bp_list[["treatment"]]
+bp_list$placebo$pre_bp
+```
+
+# Task 4: Control Flow Practice
+
+```{r}
+bp_df$status <- character(20)
+placebo_df$status <- character(10)
+for (i in 1:nrow(bp_df)) {
+  if (bp_df$diff_bp[i] <= 120) {
+    bp_df$status[i] <- "Optimal"
+  } else if (bp_df$diff_bp[i] <= 130) {
+    bp_df$status[i] <- "Borderline"
+  } else {
+    bp_df$status[i] <- "High"
+  }
+}
+for (i in 1:nrow(placebo_df)) {
+  if (placebo_df$diff_bp[i] <= 120) {
+    placebo_df$status[i] <- "Optimal"
+  } else if (placebo_df$diff_bp[i] <= 130) {
+    placebo_df$status[i] <- "Borderline"
+  } else {
+    placebo_df$status[i] <- "High"
+  }
+}
+```
+
+# Function Writing
+
+```{r}
+calculate_summary <- function(df_list, stat = "mean") {
+  my_fun <- get(stat)
+  pre_summary <- my_fun(df_list$treatment$pre_bp)
+  post_summary <- my_fun(df_list$treatment$post_bp)
+  diff_summary <- my_fun(df_list$treatment$diff_bp)
+  pre_placebo_summary <- my_fun(df_list$placebo$pre_bp)
+  post_placebo_summary <- my_fun(df_list$placebo$post_bp)
+  diff_placebo_summary <- my_fun(df_list$placebo$diff_bp)
+  names <- c("pre_summary", "post_summary", "diff_summary", "pre_placebo_summary", "post_placebo_summary", "diff_placebo_summary")
+  summary_values <- c(pre_summary, post_summary, diff_summary, pre_placebo_summary, post_placebo_summary, diff_placebo_summary)
+  names(summary_values) <- names
+  return(summary_values)
+}
+
+# Applying the function
+summary_results <- calculate_summary(bp_list)
+summary_results_var <- calculate_summary(bp_list, "var")
+summary_results_sd <- calculate_summary(bp_list, "sd")
+summary_results_min <- calculate_summary(bp_list, "min")
+summary_results_max <- calculate_summary(bp_list, "max")
+```
